@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "redcloth"
 
   s.rubygems_version   = "1.3.7"
-  s.default_executable = "redcloth"
 
   s.files            = Dir['.gemtest', '.rspec', 'CHANGELOG', 'COPYING', 'Gemfile', 'README.rdoc', 'Rakefile', 'doc/**/*', 'bin/**/*', 'lib/**/*', 'redcloth.gemspec', 'spec/**/*', 'tasks/**/*']
   s.test_files       = Dir['spec/**/*']
@@ -27,7 +26,7 @@ Gem::Specification.new do |s|
   s.files -= Dir['lib/**/*.so']
 
   s.platform = 'ruby'
-  
+
   s.files += %w[attributes inline scan].map {|f| "ext/redcloth_scan/redcloth_#{f}.c"}
   s.files += ["ext/redcloth_scan/redcloth.h"]
   s.extensions = Dir['ext/**/extconf.rb']
