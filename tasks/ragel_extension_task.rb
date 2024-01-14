@@ -2,38 +2,38 @@ module Rake
   module RagelGenerationTasks
     RAGEL_INCLUDE_PATTERN = /include \w+ "([^"]+)";/
     RAGEL_VERSION_COMMAND = "ragel -v"
-    
+
     attr_accessor :rl_dir
     attr_accessor :machines
-    
+
     def init(name = nil, gem_spec = nil)
       super
-      
+
       @rl_dir = "ragel"
       @machines = %w(scan inline attributes)
     end
-    
+
     def lang
       raise NotImplementedError
     end
-    
+
     def source_files
       @source_files ||= machines.map {|m| target(m) }
     end
-    
+
     def define
       super
       define_ragel_tasks
     end
-    
+
     def define_ragel_tasks
       machines.each do |machine|
         file target(machine) => [*ragel_sources(machine)] do
           mkdir_p(File.dirname(target(machine))) unless File.directory?(File.dirname(target(machine)))
           ensure_ragel_version
-          sh "ragel #{flags} #{lang_ragel(machine)} -o #{target(machine)}"
+          sh "ragel #{flags} #{lang_ragel(machine)} -I ragel -o #{target(machine)}"
         end
-        
+
         file extconf => [target(machine)] if lang == 'c'
       end
     end
@@ -65,12 +65,12 @@ module Rake
       deps
       # FIXME: merge that header file into other places so it can be eliminated?
     end
-    
+
     def ragel_file_dependencies(ragel_file)
       found = find_ragel_includes(ragel_file)
       found + found.collect {|file| ragel_file_dependencies(file)}
     end
-    
+
     def find_ragel_includes(file)
       File.open(file).grep(RAGEL_INCLUDE_PATTERN) { $1 }.map do |file|
         "#{@rl_dir}/#{file}"
@@ -103,7 +103,7 @@ module Rake
       STDERR.puts "Ragel 6.3 or greater is required."
       exit(1)
     end
-    
+
   end
   class RagelExtensionTask < ExtensionTask
     include RagelGenerationTasks
@@ -111,6 +111,6 @@ module Rake
     def lang
       "c"
     end
-  end  
-  
+  end
+
 end
